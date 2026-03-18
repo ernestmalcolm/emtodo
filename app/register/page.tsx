@@ -31,9 +31,9 @@ export default function RegisterPage() {
         password,
         options: {
           data: {
-            full_name: name
-          }
-        }
+            full_name: name,
+          },
+        },
       });
       if (signUpError) {
         setError(signUpError.message);
@@ -132,7 +132,10 @@ export default function RegisterPage() {
           />
 
           {error && (
-            <p className="text-sm text-quadrant-doNow/90 rounded-lg bg-quadrant-doNow/10 px-3 py-2" aria-live="polite">
+            <p
+              className="text-sm text-quadrant-doNow/90 rounded-lg bg-quadrant-doNow/10 px-3 py-2"
+              aria-live="polite"
+            >
               {error}
             </p>
           )}
@@ -150,8 +153,8 @@ export default function RegisterPage() {
                 backgroundColor: "#5BC0BE",
                 color: "#0B132B",
                 minHeight: 40,
-                border: "none"
-              }
+                border: "none",
+              },
             }}
           >
             Create account
@@ -160,7 +163,10 @@ export default function RegisterPage() {
 
         <p className="mt-8 text-center text-sm text-text-secondary">
           Already have an account?{" "}
-          <Link href="/login" className="text-text-primary font-medium underline-offset-4 hover:underline">
+          <Link
+            href="/login"
+            className="text-text-primary font-medium underline-offset-4 hover:underline"
+          >
             Sign in
           </Link>
         </p>
@@ -168,4 +174,3 @@ export default function RegisterPage() {
     </main>
   );
 }
-

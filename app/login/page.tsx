@@ -27,7 +27,7 @@ export default function LoginPage() {
       const supabase = getSupabaseClient();
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
       if (signInError) {
         setError(signInError.message);
@@ -112,7 +112,10 @@ export default function LoginPage() {
           />
 
           {error && (
-            <p className="text-sm text-quadrant-doNow/90 rounded-lg bg-quadrant-doNow/10 px-3 py-2" aria-live="polite">
+            <p
+              className="text-sm text-quadrant-doNow/90 rounded-lg bg-quadrant-doNow/10 px-3 py-2"
+              aria-live="polite"
+            >
               {error}
             </p>
           )}
@@ -130,8 +133,8 @@ export default function LoginPage() {
                 backgroundColor: "#5BC0BE",
                 color: "#0B132B",
                 minHeight: 40,
-                border: "none"
-              }
+                border: "none",
+              },
             }}
           >
             Sign in
@@ -151,4 +154,3 @@ export default function LoginPage() {
     </main>
   );
 }
-
