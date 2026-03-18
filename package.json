@@ -1,0 +1,49 @@
+{
+  "name": "em-to-do",
+  "version": "1.0.0",
+  "description": "EM To Do – a calm Eisenhower Matrix productivity app focused on prioritization psychology.",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [
+    "eisenhower-matrix",
+    "productivity",
+    "nextjs",
+    "supabase",
+    "mantine",
+    "tailwind"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mantine/core": "^8.3.16",
+    "@mantine/dates": "^8.3.16",
+    "@mantine/hooks": "^8.3.16",
+    "@mantine/modals": "^8.3.16",
+    "@supabase/supabase-js": "^2.99.1",
+    "autoprefixer": "10.4.27",
+    "dayjs": "^1.11.20",
+    "next": "^14.2.35",
+    "postcss": "8.5.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "3.4.15",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.35"
+  }
+}

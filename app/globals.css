@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+:root {
+  height: 100%;
+}
+
+body {
+  @apply bg-navy-900 text-text-primary antialiased;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #253155 #0b132b;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0b132b;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #253155;
+  border-radius: 999px;
+}
+
+/* Auth: ensure password input inner field matches dark theme */
+.auth-password-input input {
+  background-color: #0b132b !important;
+  color: #eaeff7 !important;
+  border: none !important;
+}
+.auth-password-input input::placeholder {
+  color: #6b7a99;
+}
+
