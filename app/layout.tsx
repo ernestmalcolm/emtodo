@@ -24,6 +24,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
         <ColorSchemeScript defaultColorScheme="dark" />
       </head>
       <body className={`${inter.variable} bg-navy-900 text-text-primary`}>

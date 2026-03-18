@@ -21,7 +21,7 @@ export function DashboardHeader() {
   };
 
   return (
-    <header className="mb-8 flex items-center justify-between">
+    <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <div className="flex items-center gap-2">
           <div className="h-7 w-7 rounded-lg bg-gradient-to-tr from-quadrant-doNow to-quadrant-schedule shadow-soft" />
@@ -36,16 +36,16 @@ export function DashboardHeader() {
           </p>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         <Link
           href="/analysis"
-          className="rounded-full border border-[#2c3656] px-4 py-1.5 text-xs text-text-secondary transition hover:border-quadrant-schedule hover:text-text-primary"
+          className="rounded-full border border-[#2c3656] px-3 py-1.5 text-xs text-text-secondary transition hover:border-quadrant-schedule hover:text-text-primary sm:px-4"
         >
           Analysis
         </Link>
         <button
           onClick={handleSignOut}
-          className="rounded-full border border-[#2c3656] px-4 py-1.5 text-xs text-text-secondary transition hover:border-quadrant-eliminate hover:text-text-primary"
+          className="rounded-full border border-[#2c3656] px-3 py-1.5 text-xs text-text-secondary transition hover:border-quadrant-eliminate hover:text-text-primary sm:px-4"
         >
           Sign out
         </button>

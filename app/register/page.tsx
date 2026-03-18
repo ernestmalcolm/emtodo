@@ -89,10 +89,13 @@ export default function RegisterPage() {
     <main className="flex min-h-screen items-center justify-center bg-navy-900 px-4 py-10">
       <div className="w-full max-w-[420px] rounded-2xl border border-[#222b46] bg-[#11182f] p-10 shadow-soft ring-1 ring-[#1a2340]/50">
         <header className="mb-10 space-y-3 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-navy-800/80 px-3.5 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-text-secondary">
+          <Link
+            href="/"
+            className="mx-auto inline-flex items-center gap-2 rounded-full bg-navy-800/80 px-3.5 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-text-secondary"
+          >
             <span className="h-2 w-2 rounded-full bg-quadrant-schedule shadow-[0_0_8px_rgba(91,192,190,0.4)]" />
             <span>EM TO DO</span>
-          </div>
+          </Link>
           <h1 className="text-xl font-semibold tracking-tight text-text-primary">
             Create your space
           </h1>
