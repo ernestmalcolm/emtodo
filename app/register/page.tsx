@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingEmailConfirmation, setPendingEmailConfirmation] = useState(false);
 
   if (user) {
     router.replace("/dashboard");
@@ -44,7 +45,8 @@ export default function RegisterPage() {
       // If Supabase auto-creates a session when email confirmations are disabled,
       // we still want the flow to continue via the login screen.
       await supabase.auth.signOut();
-      router.replace("/login");
+      setPendingEmailConfirmation(true);
+      setLoading(false);
     } catch (err) {
       setError("Something went wrong. Please try again.");
       setLoading(false);
@@ -99,67 +101,94 @@ export default function RegisterPage() {
           </p>
         </header>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <TextInput
-            label="Name"
-            placeholder="How should EM To Do greet you?"
-            value={name}
-            onChange={(e) => setName(e.currentTarget.value)}
-            size="md"
-            classNames={{ root: "w-full" }}
-            styles={inputStyles}
-            required
-          />
-          <TextInput
-            label="Email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.currentTarget.value)}
-            size="md"
-            classNames={{ root: "w-full" }}
-            styles={inputStyles}
-            required
-          />
-          <PasswordInput
-            label="Password"
-            placeholder="Create a password"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-            size="md"
-            classNames={{ root: "w-full auth-password-input" }}
-            styles={passwordStyles}
-            required
-          />
+        {pendingEmailConfirmation ? (
+          <div className="space-y-5">
+            <div className="rounded-xl border border-[#222b46] bg-[#0B132B]/40 p-4">
+              <p className="text-sm font-semibold text-text-primary">Check your email.</p>
+              <p className="mt-1 text-sm text-text-secondary leading-relaxed">
+                We sent a confirmation message to{" "}
+                <span className="text-text-primary/90 font-semibold">{email}</span>. Once you
+                confirm, you can sign in and continue.
+              </p>
+              <p className="mt-3 text-xs text-text-secondary/90 leading-relaxed">
+                A small step now protects your attention later.
+              </p>
+            </div>
 
-          {error && (
-            <p
-              className="text-sm text-quadrant-doNow/90 rounded-lg bg-quadrant-doNow/10 px-3 py-2"
-              aria-live="polite"
+            <Link
+              href="/login"
+              className="flex items-center justify-center rounded-lg bg-quadrant-schedule px-4 py-2 text-sm font-medium text-navy-900 shadow-soft transition hover:brightness-110"
             >
-              {error}
-            </p>
-          )}
+              Go to Login
+            </Link>
 
-          <Button
-            type="submit"
-            fullWidth
-            loading={loading}
-            size="sm"
-            variant="filled"
-            className="mt-1 rounded-lg font-medium normal-case"
-            styles={{
-              root: {
-                width: "100%",
-                backgroundColor: "#5BC0BE",
-                color: "#0B132B",
-                minHeight: 40,
-                border: "none",
-              },
-            }}
-          >
-            Create account
-          </Button>
-        </form>
+            <p className="text-xs text-text-secondary text-center">
+              Didn’t see it? Check spam and search your inbox for “EM TO DO”.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <TextInput
+              label="Name"
+              placeholder="How should EM To Do greet you?"
+              value={name}
+              onChange={(e) => setName(e.currentTarget.value)}
+              size="md"
+              classNames={{ root: "w-full" }}
+              styles={inputStyles}
+              required
+            />
+            <TextInput
+              label="Email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+              size="md"
+              classNames={{ root: "w-full" }}
+              styles={inputStyles}
+              required
+            />
+            <PasswordInput
+              label="Password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+              size="md"
+              classNames={{ root: "w-full auth-password-input" }}
+              styles={passwordStyles}
+              required
+            />
+
+            {error && (
+              <p
+                className="text-sm text-quadrant-doNow/90 rounded-lg bg-quadrant-doNow/10 px-3 py-2"
+                aria-live="polite"
+              >
+                {error}
+              </p>
+            )}
+
+            <Button
+              type="submit"
+              fullWidth
+              loading={loading}
+              size="sm"
+              variant="filled"
+              className="mt-1 rounded-lg font-medium normal-case"
+              styles={{
+                root: {
+                  width: "100%",
+                  backgroundColor: "#5BC0BE",
+                  color: "#0B132B",
+                  minHeight: 40,
+                  border: "none",
+                },
+              }}
+            >
+              Create account
+            </Button>
+          </form>
+        )}
 
         <p className="mt-8 text-center text-sm text-text-secondary">
           Already have an account?{" "}
