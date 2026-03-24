@@ -5,11 +5,13 @@ import type { Task, QuadrantId } from "./TaskTypes";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { TaskDetailsModal } from "./TaskDetailsModal";
+import { DeleteTaskConfirmModal } from "./DeleteTaskConfirmModal";
 
 type Props = {
   task: Task;
   quadrantId: QuadrantId;
   onChange: (task: Task) => void;
+  onTaskDelete: (taskId: string) => Promise<void>;
   dragAttributes: DraggableAttributes;
   dragListeners: SyntheticListenerMap | undefined;
 };
@@ -21,8 +23,19 @@ const quadrantBorder: Record<QuadrantId, string> = {
   eliminate: "border-quadrant-eliminate"
 };
 
-export function TaskCard({ task, quadrantId, onChange, dragAttributes, dragListeners }: Props) {
+const controlBtnClass =
+  "mt-0.5 select-none rounded-md border border-[#2c3656] bg-navy-900/40 px-2 py-1 text-text-secondary transition hover:border-[#384571] hover:text-text-primary";
+
+export function TaskCard({
+  task,
+  quadrantId,
+  onChange,
+  onTaskDelete,
+  dragAttributes,
+  dragListeners
+}: Props) {
   const [opened, setOpened] = useState(false);
+  const [deleteOpened, setDeleteOpened] = useState(false);
 
   return (
     <>
@@ -38,7 +51,7 @@ export function TaskCard({ task, quadrantId, onChange, dragAttributes, dragListe
         <button
           type="button"
           aria-label="Drag task"
-          className="mt-0.5 select-none rounded-md border border-[#2c3656] bg-navy-900/40 px-2 py-1 text-[10px] text-text-secondary transition hover:border-[#384571] hover:text-text-primary"
+          className={`${controlBtnClass} text-[10px]`}
           onClick={(e) => e.stopPropagation()}
           {...taskDragProps({ dragAttributes, dragListeners })}
         >
@@ -62,12 +75,32 @@ export function TaskCard({ task, quadrantId, onChange, dragAttributes, dragListe
             </p>
           )}
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-text-secondary/80">
-            {task.due_date && <span>Due {task.due_date}</span>}
+            {task.due_date && (
+              <span>
+                Due {task.due_date}
+                {task.due_time ? ` · ${task.due_time}` : ""}
+              </span>
+            )}
             {task.review_at && <span>Review {formatTiny(task.review_at)}</span>}
             {task.completed && task.completed_at && <span>Done {formatTiny(task.completed_at)}</span>}
           </div>
         </div>
-        <div className="mt-0.5 text-[10px] text-text-secondary/70">{task.completed ? "Done" : ""}</div>
+        <div className="mt-0.5 flex shrink-0 items-start gap-4">
+          {task.completed ? (
+            <span className="mt-0.5 whitespace-nowrap text-[10px] text-text-secondary/70">Done</span>
+          ) : null}
+          <button
+            type="button"
+            aria-label="Delete task"
+            className={`${controlBtnClass} flex shrink-0 items-center justify-center hover:border-red-900/40 hover:text-red-300/90`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteOpened(true);
+            }}
+          >
+            <TrashIcon />
+          </button>
+        </div>
       </div>
 
       <TaskDetailsModal
@@ -76,7 +109,34 @@ export function TaskCard({ task, quadrantId, onChange, dragAttributes, dragListe
         task={task}
         onSaved={onChange}
       />
+
+      <DeleteTaskConfirmModal
+        opened={deleteOpened}
+        onClose={() => setDeleteOpened(false)}
+        task={deleteOpened ? task : null}
+        onConfirm={() => onTaskDelete(task.id)}
+      />
     </>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg
+      className="h-3 w-3"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M3 6h18" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
   );
 }
 

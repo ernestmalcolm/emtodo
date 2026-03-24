@@ -38,15 +38,22 @@ EM To Do is a minimal, calm productivity app built around the Eisenhower Matrix.
      urgency boolean not null default true,
      quadrant text not null check (quadrant in ('do_now', 'schedule', 'delegate', 'eliminate')),
      completed boolean not null default false,
-  due_date date,
-  review_at timestamp with time zone,
-  completed_at timestamp with time zone,
+     due_date date,
+     due_time text,
+     review_at timestamp with time zone,
+     completed_at timestamp with time zone,
      created_at timestamp with time zone not null default now(),
      user_id uuid not null references auth.users(id) on delete cascade
    );
 
    create index if not exists tasks_user_id_created_at_idx
      on public.tasks (user_id, created_at desc);
+   ```
+
+   If the table already exists, add optional due time:
+
+   ```sql
+   alter table public.tasks add column if not exists due_time text;
    ```
 
 4. **Run the dev server**

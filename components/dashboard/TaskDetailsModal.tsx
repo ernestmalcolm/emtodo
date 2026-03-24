@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Modal, TextInput, Textarea, Radio, Button, Switch } from "@mantine/core";
 import { DateInput, TimeInput, DateTimePicker } from "@mantine/dates";
 import type { QuadrantId, Task } from "./TaskTypes";
+import { TimeLabelWithHint } from "./TimeLabelWithHint";
 import { getSupabaseClient } from "@/lib/supabase-client";
 
 type Props = {
@@ -33,6 +34,7 @@ export function TaskDetailsModal({ opened, onClose, task, onSaved }: Props) {
   const [importance, setImportance] = useState(task.importance);
   const [urgency, setUrgency] = useState(task.urgency);
   const [dueDate, setDueDate] = useState<string | null>(task.due_date ?? null);
+  const [dueTime, setDueTime] = useState<string>(task.due_time?.trim() || "09:00");
   const initialReview = splitReviewAt(task.review_at ?? null);
   const [reviewDate, setReviewDate] = useState<string | null>(initialReview.date);
   const [reviewTime, setReviewTime] = useState<string>(initialReview.time);
@@ -50,6 +52,7 @@ export function TaskDetailsModal({ opened, onClose, task, onSaved }: Props) {
     setImportance(task.importance);
     setUrgency(task.urgency);
     setDueDate(task.due_date ?? null);
+    setDueTime(task.due_time?.trim() || "09:00");
     const nextReview = splitReviewAt(task.review_at ?? null);
     setReviewDate(nextReview.date);
     setReviewTime(nextReview.time);
@@ -83,6 +86,7 @@ export function TaskDetailsModal({ opened, onClose, task, onSaved }: Props) {
         urgency,
         quadrant: quadrantPreview,
         due_date: dueDate,
+        due_time: dueDate && dueTime.trim() ? dueTime.trim() : null,
         review_at: reviewAt,
         completed,
         completed_at: nextCompletedAt
@@ -150,57 +154,99 @@ export function TaskDetailsModal({ opened, onClose, task, onSaved }: Props) {
           }}
         />
 
-        <div className="grid gap-3 md:gap-3 md:[grid-template-columns:0.85fr_1.15fr]">
-          <DateInput
-            label="Due date"
-            placeholder="Pick a day"
-            value={dueDate}
-            onChange={setDueDate}
-            clearable
-            size="sm"
-            valueFormat="YYYY-MM-DD"
-            styles={{
-              label: { color: "#AAB6CF", fontSize: 12 },
-              input: { backgroundColor: "#0B132B", borderColor: "#222b46", color: "#EAEFF7" }
-            }}
-          />
-          <div className="grid gap-3 md:gap-3 md:[grid-template-columns:1fr_0.9fr]">
-            <DateInput
-              label="Review day"
-              placeholder="Pick a day"
-              value={reviewDate}
-              onChange={(value) => {
-                setReviewDate(value);
-                if (!value) setReviewTime("09:00");
-              }}
-              clearable
-              size="sm"
-              valueFormat="YYYY-MM-DD"
-              styles={{
-                label: { color: "#AAB6CF", fontSize: 12 },
-                input: {
-                  backgroundColor: "#0B132B",
-                  borderColor: "#222b46",
-                  color: "#EAEFF7"
+        <div className="space-y-4">
+          <div>
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+              Due
+            </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <DateInput
+                label="Date"
+                placeholder="Pick a day"
+                value={dueDate}
+                onChange={(value) => {
+                  setDueDate(value);
+                  if (!value) setDueTime("09:00");
+                }}
+                clearable
+                size="sm"
+                valueFormat="YYYY-MM-DD"
+                styles={{
+                  label: { color: "#AAB6CF", fontSize: 12 },
+                  input: { backgroundColor: "#0B132B", borderColor: "#222b46", color: "#EAEFF7" }
+                }}
+              />
+              <TimeInput
+                label={
+                  <TimeLabelWithHint
+                    showHint={!dueDate}
+                    hint="Choose a due date first. Then you can set a time."
+                  />
                 }
-              }}
-            />
-            <TimeInput
-              label="Time"
-              value={reviewTime}
-              onChange={(e) => setReviewTime(e.currentTarget.value)}
-              disabled={!reviewDate}
-              size="sm"
-              styles={{
-                label: { color: "#AAB6CF", fontSize: 12 },
-                input: {
-                  backgroundColor: "#0B132B",
-                  borderColor: "#222b46",
-                  color: "#EAEFF7",
-                  opacity: reviewDate ? 1 : 0.55
+                value={dueTime}
+                onChange={(e) => setDueTime(e.currentTarget.value)}
+                disabled={!dueDate}
+                size="sm"
+                styles={{
+                  label: { color: "#AAB6CF", fontSize: 12 },
+                  input: {
+                    backgroundColor: "#0B132B",
+                    borderColor: "#222b46",
+                    color: "#EAEFF7",
+                    opacity: dueDate ? 1 : 0.55
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+              Review
+            </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <DateInput
+                label="Date"
+                placeholder="Pick a day"
+                value={reviewDate}
+                onChange={(value) => {
+                  setReviewDate(value);
+                  if (!value) setReviewTime("09:00");
+                }}
+                clearable
+                size="sm"
+                valueFormat="YYYY-MM-DD"
+                styles={{
+                  label: { color: "#AAB6CF", fontSize: 12 },
+                  input: {
+                    backgroundColor: "#0B132B",
+                    borderColor: "#222b46",
+                    color: "#EAEFF7"
+                  }
+                }}
+              />
+              <TimeInput
+                label={
+                  <TimeLabelWithHint
+                    showHint={!reviewDate}
+                    hint="Choose a review day first. Then you can set a time."
+                  />
                 }
-              }}
-            />
+                value={reviewTime}
+                onChange={(e) => setReviewTime(e.currentTarget.value)}
+                disabled={!reviewDate}
+                size="sm"
+                styles={{
+                  label: { color: "#AAB6CF", fontSize: 12 },
+                  input: {
+                    backgroundColor: "#0B132B",
+                    borderColor: "#222b46",
+                    color: "#EAEFF7",
+                    opacity: reviewDate ? 1 : 0.55
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
 

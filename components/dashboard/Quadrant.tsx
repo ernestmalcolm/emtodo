@@ -1,7 +1,9 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
+import { useMemo, type CSSProperties } from "react";
+import { motion } from "framer-motion";
 import type { QuadrantId, Task } from "./TaskTypes";
+import { sortTasksForDisplay } from "./TaskTypes";
 import { TaskCard } from "./TaskCard";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
@@ -12,6 +14,7 @@ type Props = {
   description: string;
   tasks: Task[];
   onTaskChange: (task: Task) => void;
+  onTaskDelete: (taskId: string) => Promise<void>;
   onAddTaskClick: () => void;
 };
 
@@ -28,9 +31,12 @@ export function QuadrantPanel({
   description,
   tasks,
   onTaskChange,
+  onTaskDelete,
   onAddTaskClick
 }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id });
+
+  const sortedTasks = useMemo(() => sortTasksForDisplay(tasks), [tasks]);
 
   const emptyMessage =
     id === "do_now"
@@ -44,33 +50,41 @@ export function QuadrantPanel({
   return (
     <section
       ref={setNodeRef}
-      className={`flex min-h-[220px] flex-col rounded-2xl border border-[#222b46] bg-[#10172f]/80 p-4 shadow-soft transition-colors ${
+      className={`flex min-h-[160px] max-h-[min(50vh,360px)] flex-col overflow-hidden rounded-2xl border border-[#222b46] bg-[#10172f]/80 p-4 shadow-soft transition-colors ${
         isOver ? "border-quadrant-schedule/80 bg-navy-800/80" : ""
       }`}
     >
-      <header className="mb-3 space-y-1">
+      <header className="mb-3 shrink-0 space-y-1">
         <p className={`text-[11px] font-semibold tracking-[0.25em] ${quadrantAccentBg[id]}`}>
           {label}
         </p>
         <p className="text-[11px] text-text-secondary">{description}</p>
       </header>
 
-      <SortableContext items={tasks.map((t) => t.id)}>
-        <div className="flex flex-1 flex-col gap-2">
-          {tasks.length === 0 ? (
-            <p className="text-[11px] italic text-text-secondary/80">{emptyMessage}</p>
-          ) : (
-            tasks.map((task) => (
-              <DraggableTask key={task.id} task={task} quadrantId={id} onChange={onTaskChange} />
-            ))
-          )}
-        </div>
-      </SortableContext>
+      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto [-webkit-overflow-scrolling:touch]">
+        <SortableContext items={sortedTasks.map((t) => t.id)}>
+          <div className="flex flex-col gap-2 pb-1 pr-0.5">
+            {sortedTasks.length === 0 ? (
+              <p className="text-[11px] italic text-text-secondary/80">{emptyMessage}</p>
+            ) : (
+              sortedTasks.map((task) => (
+                <DraggableTask
+                  key={task.id}
+                  task={task}
+                  quadrantId={id}
+                  onChange={onTaskChange}
+                  onTaskDelete={onTaskDelete}
+                />
+              ))
+            )}
+          </div>
+        </SortableContext>
+      </div>
 
       <button
         type="button"
         onClick={onAddTaskClick}
-        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-[#384571] px-3 py-1.5 text-[11px] text-text-secondary transition hover:border-quadrant-schedule hover:text-text-primary"
+        className="mt-3 inline-flex shrink-0 items-center gap-1.5 rounded-full border border-dashed border-[#384571] px-3 py-1.5 text-[11px] text-text-secondary transition hover:border-quadrant-schedule hover:text-text-primary"
       >
         <span className="text-base leading-none text-quadrant-schedule">＋</span>
         <span>Add task</span>
@@ -83,9 +97,10 @@ type DraggableTaskProps = {
   task: Task;
   quadrantId: QuadrantId;
   onChange: (task: Task) => void;
+  onTaskDelete: (taskId: string) => Promise<void>;
 };
 
-function DraggableTask({ task, quadrantId, onChange }: DraggableTaskProps) {
+function DraggableTask({ task, quadrantId, onChange, onTaskDelete }: DraggableTaskProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id
   });
@@ -98,15 +113,28 @@ function DraggableTask({ task, quadrantId, onChange }: DraggableTaskProps) {
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <motion.div
+      ref={setNodeRef}
+      layout={!isDragging}
+      style={style}
+      transition={{ type: "spring", stiffness: 420, damping: 34 }}
+      initial={false}
+      animate={
+        task.completed
+          ? { opacity: 0.92, scale: 1 }
+          : { opacity: 1, scale: 1 }
+      }
+      className="w-full"
+    >
       <TaskCard
         task={task}
         quadrantId={quadrantId}
         onChange={onChange}
+        onTaskDelete={onTaskDelete}
         dragAttributes={attributes}
         dragListeners={listeners}
       />
-    </div>
+    </motion.div>
   );
 }
 

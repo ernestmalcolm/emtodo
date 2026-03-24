@@ -83,6 +83,18 @@ export function Matrix() {
     setTasks((prev) => [...prev, task]);
   };
 
+  const handleTaskDelete = async (taskId: string) => {
+    if (!user) return;
+    const supabase = getSupabaseClient();
+    const { error } = await supabase
+      .from("tasks")
+      .delete()
+      .eq("id", taskId)
+      .eq("user_id", user.id);
+    if (error) throw new Error(error.message);
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+  };
+
   if (!user) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-text-secondary">
@@ -103,6 +115,7 @@ export function Matrix() {
               description={quadrant.description}
               tasks={tasks.filter((t) => t.quadrant === quadrant.id)}
               onTaskChange={updateTaskInState}
+              onTaskDelete={handleTaskDelete}
               onAddTaskClick={() => setModalQuadrant(quadrant.id)}
             />
           ))}
